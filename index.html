@@ -814,6 +814,76 @@ input[type="range"]::-moz-range-thumb {
         </div>
       </div>
 
+      <!-- MCP Server Development -->
+      <div class="lv-card" style="margin-top:4px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+          <div>
+            <div class="lv-title">🤖 MCP Server Development <span style="font-size:10px;font-weight:600;background:rgba(204,255,0,0.12);color:#CCFF00;border-radius:99px;padding:2px 8px;margin-left:6px;">Optional</span></div>
+            <div class="lv-desc">Kong auto-generates MCP servers from OpenAPI specs — no custom code required. Include the cost of building and maintaining these without Kong.</div>
+          </div>
+          <label class="tog"><input type="checkbox" id="tog-mcp" onchange="togMcp()"><span class="tog-trk"></span></label>
+        </div>
+        <div class="lv-details" id="det-mcp" style="display:none;margin-top:14px;">
+          <div class="fg3" style="margin-bottom:14px;">
+            <div class="field">
+              <label class="flbl">Number of APIs / MCP servers</label>
+              <input type="number" id="mcp-num-apis" value="5" min="1" step="1" oninput="upd()">
+              <span class="fhint">Each API or tool set requiring its own MCP server</span>
+            </div>
+            <div class="field">
+              <label class="flbl">Complexity level</label>
+              <select id="mcp-complexity" onchange="upd()" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#fff;padding:9px 12px;font-size:13px;">
+                <option value="simple">Simple — single-purpose wrapper</option>
+                <option value="standard" selected>Standard — auth + multiple tools</option>
+                <option value="complex">Complex — orchestration / regulated</option>
+              </select>
+              <span class="fhint">Drives build weeks and maintenance %</span>
+            </div>
+            <div class="field">
+              <label class="flbl">Estimated MCP build cost</label>
+              <div style="font-size:20px;font-weight:800;font-family:'Roboto Mono',monospace;color:#CCFF00;padding:8px 0;" id="mcp-est-cost">$0</div>
+              <span class="fhint">One-time build + 3-yr maintenance (at your eng rate)</span>
+            </div>
+          </div>
+          <!-- Guideline table -->
+          <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:14px;margin-top:4px;">
+            <div style="font-size:10px;font-weight:700;color:var(--g600);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;">Industry Benchmarks — MCP Development Effort</div>
+            <table style="width:100%;border-collapse:collapse;font-size:11px;">
+              <thead>
+                <tr>
+                  <th style="text-align:left;padding:6px 8px;color:var(--g600);font-weight:700;border-bottom:1px solid rgba(255,255,255,0.07);">Complexity</th>
+                  <th style="text-align:left;padding:6px 8px;color:var(--g600);font-weight:700;border-bottom:1px solid rgba(255,255,255,0.07);">Engineering Time</th>
+                  <th style="text-align:left;padding:6px 8px;color:var(--g600);font-weight:700;border-bottom:1px solid rgba(255,255,255,0.07);">Annual Maintenance</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:6px 8px;color:var(--g400);border-bottom:1px solid rgba(255,255,255,0.04);">Simple (single-purpose wrapper)</td>
+                  <td style="padding:6px 8px;color:var(--white);font-family:'Roboto Mono',monospace;border-bottom:1px solid rgba(255,255,255,0.04);">1–2 weeks</td>
+                  <td style="padding:6px 8px;color:var(--white);font-family:'Roboto Mono',monospace;border-bottom:1px solid rgba(255,255,255,0.04);">20–30% of build cost</td>
+                </tr>
+                <tr>
+                  <td style="padding:6px 8px;color:var(--g400);border-bottom:1px solid rgba(255,255,255,0.04);">Standard (auth + multiple tools)</td>
+                  <td style="padding:6px 8px;color:var(--white);font-family:'Roboto Mono',monospace;border-bottom:1px solid rgba(255,255,255,0.04);">3–5 weeks</td>
+                  <td style="padding:6px 8px;color:var(--white);font-family:'Roboto Mono',monospace;border-bottom:1px solid rgba(255,255,255,0.04);">20–30%</td>
+                </tr>
+                <tr>
+                  <td style="padding:6px 8px;color:var(--g400);border-bottom:1px solid rgba(255,255,255,0.04);">Complex (orchestration, regulated)</td>
+                  <td style="padding:6px 8px;color:var(--white);font-family:'Roboto Mono',monospace;border-bottom:1px solid rgba(255,255,255,0.04);">6–12 weeks</td>
+                  <td style="padding:6px 8px;color:var(--white);font-family:'Roboto Mono',monospace;border-bottom:1px solid rgba(255,255,255,0.04);">30–45%</td>
+                </tr>
+                <tr>
+                  <td style="padding:6px 8px;color:var(--g400);">Per additional API/tool added</td>
+                  <td style="padding:6px 8px;color:var(--white);font-family:'Roboto Mono',monospace;">+2–5 days each</td>
+                  <td style="padding:6px 8px;color:var(--white);font-family:'Roboto Mono',monospace;">ongoing</td>
+                </tr>
+              </tbody>
+            </table>
+            <div style="font-size:10px;color:var(--g700);margin-top:8px;">Sources: Bacancy Technology, Digital Applied, MCP Done — MCP Development Cost benchmarks 2026</div>
+          </div>
+        </div>
+      </div>
+
       <div class="nav-btns">
         <button class="btn btn-sec" onclick="goTo(2)">← Back</button>
         <button class="btn btn-pri" onclick="goTo(4)">Risk & Compliance →</button>
@@ -977,6 +1047,19 @@ input[type="range"]::-moz-range-thumb {
               <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--g500); margin-bottom:10px;">
                 <span>Maintenance Y3 (+5% inflation)</span><span id="r-maint-y3" style="color:var(--g400); font-weight:600;">$0</span>
               </div>
+              <!-- MCP rows -->
+              <div id="r-mcp-bvb-row" style="display:none; border-top:1px solid rgba(255,165,0,0.2); padding-top:8px; margin-top:4px;">
+                <div style="font-size:10px;font-weight:700;color:rgba(255,165,0,0.7);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;">🤖 MCP Server Dev (<span id="r-mcp-label">—</span>)</div>
+                <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--g500); margin-bottom:4px;">
+                  <span>Build cost (one-time)</span><span id="r-mcp-build" style="color:var(--g400); font-weight:600;">$0</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--g500); margin-bottom:4px;">
+                  <span>3-yr maintenance</span><span id="r-mcp-maint" style="color:var(--g400); font-weight:600;">$0</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--g500); font-weight:700;">
+                  <span>MCP total (3yr)</span><span id="r-mcp-total" style="color:#FFA500; font-weight:700;">$0</span>
+                </div>
+              </div>
             </div>
             <div class="cap-list" style="margin-top:4px;">
               <div class="cap-item" style="font-size:11px; color:var(--g500);">⏱ Time to production: <span id="r-build-time" style="margin-left:auto; font-weight:700; color:var(--g400);">~4 months</span></div>
@@ -1009,6 +1092,7 @@ input[type="range"]::-moz-range-thumb {
               <div class="cap-item" style="font-size:11px;"><div class="cap-chk" style="width:14px;height:14px;"><svg viewBox="0 0 9 7" fill="none"><path d="M1 3.5l2.5 2.5 4.5-5" stroke="#001408" stroke-width="1.5" stroke-linecap="round"/></svg></div>Zero maintenance burden — Kong handles it</div>
               <div class="cap-item" style="font-size:11px;"><div class="cap-chk" style="width:14px;height:14px;"><svg viewBox="0 0 9 7" fill="none"><path d="M1 3.5l2.5 2.5 4.5-5" stroke="#001408" stroke-width="1.5" stroke-linecap="round"/></svg></div>All LLM provider updates included</div>
               <div class="cap-item" style="font-size:11px;"><div class="cap-chk" style="width:14px;height:14px;"><svg viewBox="0 0 9 7" fill="none"><path d="M1 3.5l2.5 2.5 4.5-5" stroke="#001408" stroke-width="1.5" stroke-linecap="round"/></svg></div>Engineers redirect to product</div>
+              <div class="cap-item" style="font-size:11px;"><div class="cap-chk" style="width:14px;height:14px;"><svg viewBox="0 0 9 7" fill="none"><path d="M1 3.5l2.5 2.5 4.5-5" stroke="#001408" stroke-width="1.5" stroke-linecap="round"/></svg></div>MCP servers auto-generated from OpenAPI specs</div>
             </div>
           </div>
         </div>
@@ -1039,6 +1123,7 @@ input[type="range"]::-moz-range-thumb {
             <div class="cap-item"><div class="cap-chk"><svg viewBox="0 0 9 7" fill="none"><path d="M1 3.5l2.5 2.5 4.5-5" stroke="#001408" stroke-width="1.5" stroke-linecap="round"/></svg></div>Full observability & cost allocation by team<span class="cap-time">Build: 3–6 wks</span></div>
             <div class="cap-item" id="cap-pii" style="display:none;"><div class="cap-chk"><svg viewBox="0 0 9 7" fill="none"><path d="M1 3.5l2.5 2.5 4.5-5" stroke="#001408" stroke-width="1.5" stroke-linecap="round"/></svg></div>PII detection & data masking in-flight<span class="cap-time">Build: 4–8 wks</span></div>
             <div class="cap-item" id="cap-audit" style="display:none;"><div class="cap-chk"><svg viewBox="0 0 9 7" fill="none"><path d="M1 3.5l2.5 2.5 4.5-5" stroke="#001408" stroke-width="1.5" stroke-linecap="round"/></svg></div>Regulatory audit logging with immutable records<span class="cap-time">Build: 4–8 wks</span></div>
+            <div class="cap-item" id="cap-mcp" style="display:none;"><div class="cap-chk"><svg viewBox="0 0 9 7" fill="none"><path d="M1 3.5l2.5 2.5 4.5-5" stroke="#001408" stroke-width="1.5" stroke-linecap="round"/></svg></div>MCP servers auto-generated from OpenAPI specs — no custom code<span class="cap-time">Build: 1–12 wks each</span></div>
           </div>
         </div>
       </div>
@@ -1299,6 +1384,9 @@ function upd() {
     existingGw:  ck('tog-existing-gw'),
     existingGwCost: ck('tog-existing-gw') ? (vn('existing-gw-cost')) : 0,
     existingGwType: v('existing-gw-type') || 'Existing Gateway',
+    mcp:         ck('tog-mcp'),
+    mcpNumApis:  +v('mcp-num-apis') || 0,
+    mcpComplexity: v('mcp-complexity') || 'standard',
   };
 
 
@@ -1339,7 +1427,20 @@ function upd() {
   const maintAnnY2 = maintAnnY1 * 1.05;
   const maintAnnY3 = maintAnnY2 * 1.05;
   const maintTotal = maintAnnY1 + maintAnnY2 + maintAnnY3;
-  const buildTotal3yr = buildCost + maintTotal;
+
+  // MCP cost (optional)
+  const mcpComp        = MCP_COMPLEXITY[S.mcpComplexity] || MCP_COMPLEXITY.standard;
+  const weeklyDevRate   = S.engCost / 4.33;
+  const mcpBuildPer    = mcpComp.weeks * weeklyDevRate;
+  const mcpBuildTotal  = S.mcp ? S.mcpNumApis * mcpBuildPer : 0;
+  const mcpMaintAnn    = mcpBuildTotal * mcpComp.maintPct;
+  const mcpMaintTotal  = mcpMaintAnn * 3;
+  const mcpTotal3yr    = mcpBuildTotal + mcpMaintTotal;
+  // Update MCP estimate display
+  const mcpEstEl = document.getElementById('mcp-est-cost');
+  if (mcpEstEl) mcpEstEl.textContent = S.mcp ? fmtF(mcpTotal3yr) : '$0';
+
+  const buildTotal3yr = buildCost + maintTotal + mcpTotal3yr;
   const kong3yr       = p3.totKong + (p3.totPs || 0);
   const buildVsKong   = buildTotal3yr - kong3yr;
   const netMo = sav.total + S.existingGwCost / 12 - kong.monthly;
@@ -1411,6 +1512,13 @@ function upd() {
   set('r-ps-bvb',        fmt(psCost));
   const psBvbRow = document.getElementById('r-ps-bvb-row');
   if (psBvbRow) psBvbRow.style.display = psEnabled && psCost > 0 ? 'flex' : 'none';
+  // MCP row in BVB
+  const mcpBvbRow = document.getElementById('r-mcp-bvb-row');
+  if (mcpBvbRow) mcpBvbRow.style.display = S.mcp && mcpTotal3yr > 0 ? 'block' : 'none';
+  set('r-mcp-build', fmt(mcpBuildTotal));
+  set('r-mcp-maint', fmt(mcpMaintTotal));
+  set('r-mcp-total', fmt(mcpTotal3yr));
+  set('r-mcp-label', S.mcpNumApis + ' MCP server' + (S.mcpNumApis !== 1 ? 's' : '') + ' (' + S.mcpComplexity + ')');
   set('r-avoided',       buildVsKong > 0 ? fmt(buildVsKong) : '$0');
   set('r-eng-mo',        (S.numEng * S.buildMo).toFixed(0));
   set('r-ttv',           Math.max(1, S.buildMo - 1) + '+ mo faster');
@@ -1420,6 +1528,7 @@ function upd() {
   // Risk capabilities
   show('cap-pii',   S.pii);
   show('cap-audit', S.audit);
+  show('cap-mcp',   S.mcp);
 
   // ---- RISK PROTECTION SECTION ----
   const totalRisk = S.piiPenalty + S.auditPenalty + S.residencyPenalty;
@@ -1538,6 +1647,13 @@ function togLever(lv) {
   upd();
 }
 
+// ---- MCP COMPLEXITY BENCHMARKS ----
+const MCP_COMPLEXITY = {
+  simple:   { weeks: 1.5, maintPct: 0.25 },
+  standard: { weeks: 4,   maintPct: 0.25 },
+  complex:  { weeks: 9,   maintPct: 0.375 },
+};
+
 // ---- RISK FACTOR DEFAULTS BY INDUSTRY ----
 const RISK_DEFAULTS = {
   tech:   { pii: 500000,  reg: 500000,  res: 250000,
@@ -1644,6 +1760,9 @@ function generateReport() {
     existingGw:   ck('tog-existing-gw'),
     existingGwCost: ck('tog-existing-gw') ? (vn('existing-gw-cost')) : 0,
     existingGwType: v('existing-gw-type') || 'Custom-built',
+    mcp:          ck('tog-mcp'),
+    mcpNumApis:   +v('mcp-num-apis') || 0,
+    mcpComplexity: v('mcp-complexity') || 'standard',
   };
   const industry = ['tech','fsi','health','gov','retail','other'].find(i =>
     document.getElementById('ind-'+i)?.classList.contains('sel')) || 'tech';
@@ -1670,7 +1789,15 @@ function generateReport() {
   const rMaintY2     = rMaintY1 * 1.05;
   const rMaintY3     = rMaintY2 * 1.05;
   const rMaintTotal  = rMaintY1 + rMaintY2 + rMaintY3;
-  const rBuildTotal3 = buildCost + rMaintTotal;
+  // MCP costs in report
+  const rMcpComp      = MCP_COMPLEXITY[S.mcpComplexity] || MCP_COMPLEXITY.standard;
+  const rWeeklyDev    = S.engCost / 4.33;
+  const rMcpBuildPer  = rMcpComp.weeks * rWeeklyDev;
+  const rMcpBuild     = S.mcp ? S.mcpNumApis * rMcpBuildPer : 0;
+  const rMcpMaintAnn  = rMcpBuild * rMcpComp.maintPct;
+  const rMcpMaint3    = rMcpMaintAnn * 3;
+  const rMcpTotal3    = rMcpBuild + rMcpMaint3;
+  const rBuildTotal3 = buildCost + rMaintTotal + rMcpTotal3;
   const rKong3       = p3.totKong + (p3.totPs || 0);
   const rBuildPremium = rBuildTotal3 - rKong3;
   const rOppCost     = totalMo * S.buildMo;
@@ -1953,6 +2080,7 @@ tr:last-child td { border-bottom: none; }
         <div class="bvb-list">
           <div class="bvb-item">🔨 Upfront build: ${S.numEng} eng${S.numEng !== 1 ? 's' : ''} × ${S.buildMo} months @ $${S.engCost.toLocaleString()}/mo = <strong>${fmt(buildCost)}</strong></div>
           <div class="bvb-item">🛠️ Ongoing maintenance (${S.maintPct}% FTE): Y1 ${fmt(rMaintY1)} / Y2 ${fmt(rMaintY2)} / Y3 ${fmt(rMaintY3)} = <strong>${fmt(rMaintTotal)}</strong></div>
+          ${S.mcp ? `<div class="bvb-item">🤖 MCP server dev (${S.mcpNumApis} servers, ${S.mcpComplexity}): Build ${fmt(rMcpBuild)} + 3-yr maint ${fmt(rMcpMaint3)} = <strong>${fmt(rMcpTotal3)}</strong></div>` : ''}
           <div class="bvb-item">⏱ Time to production: ~${S.buildMo} months</div>
           <div class="bvb-item">🛡️ Requires continuous: security patches, LLM API updates, new provider integrations, internal support</div>
           <div class="bvb-item">📅 Opportunity cost: ${S.buildMo} months × ${fmt(totalMo)}/mo savings delayed = <strong>${fmt(rOppCost)}</strong></div>
@@ -1968,6 +2096,7 @@ tr:last-child td { border-bottom: none; }
           <div class="bvb-item">✅ Production-ready in weeks, not months</div>
           <div class="bvb-item">✅ Zero maintenance burden — Kong handles patches, LLM updates &amp; new features</div>
           <div class="bvb-item">✅ ${S.numEng * S.buildMo} engineering months redirected to product</div>
+          ${S.mcp ? `<div class="bvb-item">✅ MCP servers auto-generated from OpenAPI specs — no custom dev required (saves ${fmt(rMcpTotal3)} over 3 years)</div>` : ''}
           <div class="bvb-item">✅ 3-year cost premium to build vs. buy: <strong>${rBuildPremium > 0 ? fmt(rBuildPremium) : '$0'}</strong></div>
         </div>
       </div>
@@ -2068,6 +2197,13 @@ function togPS() {
 function togExistingGw() {
   const on = document.getElementById('tog-existing-gw').checked;
   const det = document.getElementById('det-existing-gw');
+  if (det) det.style.display = on ? 'block' : 'none';
+  upd();
+}
+
+function togMcp() {
+  const on = document.getElementById('tog-mcp').checked;
+  const det = document.getElementById('det-mcp');
   if (det) det.style.display = on ? 'block' : 'none';
   upd();
 }
