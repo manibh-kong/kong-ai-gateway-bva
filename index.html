@@ -558,6 +558,37 @@ input[type="range"]::-moz-range-thumb {
         </div>
       </div>
 
+      <!-- Adoption Ramp -->
+      <div class="lv-card" style="margin-top:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+          <div>
+            <div class="lv-title">📈 Adoption Ramp <span style="font-size:10px;font-weight:600;background:rgba(204,255,0,0.12);color:#CCFF00;border-radius:99px;padding:2px 8px;margin-left:6px;">Optional</span></div>
+            <div class="lv-desc">Model how Kong benefits grow as more teams adopt it. Y1 savings are partial — full value realised by Y3.</div>
+          </div>
+          <label class="tog"><input type="checkbox" id="tog-ramp" onchange="togRamp()"><span class="tog-trk"></span></label>
+        </div>
+        <div id="ramp-fields" style="display:none;margin-top:12px;">
+          <div class="fg3" style="margin-bottom:8px;">
+            <div class="field" style="margin:0;">
+              <label class="flbl">Year 1 adoption</label>
+              <div class="iw"><input type="number" id="ramp-y1" value="50" min="1" max="100" step="5" oninput="upd()"><span class="ipsfx">%</span></div>
+              <span class="fhint">Initial rollout — limited teams using Kong</span>
+            </div>
+            <div class="field" style="margin:0;">
+              <label class="flbl">Year 2 adoption</label>
+              <div class="iw"><input type="number" id="ramp-y2" value="75" min="1" max="100" step="5" oninput="upd()"><span class="ipsfx">%</span></div>
+              <span class="fhint">Broader rollout — most teams onboarded</span>
+            </div>
+            <div class="field" style="margin:0;">
+              <label class="flbl">Year 3 adoption</label>
+              <div class="iw"><input type="number" id="ramp-y3" value="100" min="1" max="100" step="5" oninput="upd()"><span class="ipsfx">%</span></div>
+              <span class="fhint">Full adoption — all AI traffic through Kong</span>
+            </div>
+          </div>
+          <div class="fml-note" style="margin-top:4px;">Savings per year = base savings × adoption % · Y2/Y3 Kong cost unchanged</div>
+        </div>
+      </div>
+
       <!-- Professional Services -->
       <div class="lv-card" style="margin-top:8px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
@@ -1306,14 +1337,16 @@ function calcSavings(S) {
 // fixedMo   = uptime+billing+existingGw monthly savings (flat across years)
 // kongYears = {y1, y2, y3} explicit per-year Kong costs (flat or ramp)
 // psOnetime = professional services cost (Year 1 only)
-function proj3yr(spendMo, fixedMo, kongYears, psOnetime) {
+// adoptionMul = [y1mul, y2mul, y3mul] e.g. [0.5, 0.75, 1.0] for ramp
+function proj3yr(spendMo, fixedMo, kongYears, psOnetime, adoptionMul) {
+  const mul = adoptionMul || [1, 1, 1];
   const kongArr = [kongYears.y1, kongYears.y2, kongYears.y3];
   const yrs = [];
   for (let y = 1; y <= 3; y++) {
     const ps = y === 1 ? (psOnetime || 0) : 0;
     yrs.push({
       yr: y,
-      sav: (spendMo + fixedMo) * 12,
+      sav:  (spendMo + fixedMo) * 12 * mul[y-1],
       kong: kongArr[y-1],
       ps,
     });
@@ -1421,7 +1454,11 @@ function upd() {
   const roi     = kong.annual > 0 ? (annSav - kong.annual) / kong.annual * 100 : 0;
   const totalMoSavAdj = sav.total + S.existingGwCost / 12;
   const payback = totalMoSavAdj > 0 && kong.annual > 0 ? (kong.annual + psCost) / totalMoSavAdj : 0;
-  const p3 = proj3yr(spendMonthlySav, fixedMonthlySav, kongYears, psCost);
+  const useRampAdopt = ck('tog-ramp');
+  const adoptionMul = useRampAdopt
+    ? [(+v('ramp-y1')||50)/100, (+v('ramp-y2')||75)/100, (+v('ramp-y3')||100)/100]
+    : [1, 1, 1];
+  const p3 = proj3yr(spendMonthlySav, fixedMonthlySav, kongYears, psCost, adoptionMul);
   const buildCost  = S.numEng * S.engCost * S.buildMo;
   const maintAnnY1 = S.engCost * 12 * (S.maintPct / 100);
   const maintAnnY2 = maintAnnY1 * 1.05;
@@ -1605,18 +1642,23 @@ function initFmt() {
 function renderChart(yrs) {
   const el = document.getElementById('bar-chart');
   if (!el) return;
-  const max = Math.max(...yrs.map(y => Math.max(y.sav, y.kong)), 1);
+  // Include PS in Y1 Kong cost so chart reflects true Y1 investment
+  const kongTotal = y => y.kong + (y.ps || 0);
+  const max = Math.max(...yrs.map(y => Math.max(y.sav, kongTotal(y))), 1);
   el.innerHTML = yrs.map(y => {
+    const kt = kongTotal(y);
     const sh = Math.max(3, y.sav / max * 120);
-    const kh = Math.max(3, y.kong / max * 120);
+    const kh = Math.max(3, kt / max * 120);
     const mh = Math.max(sh, kh);
+    const psLabel = y.ps > 0 ? ` <span style="font-size:9px;opacity:0.7;">(incl. PS)</span>` : '';
     return `<div class="bar-grp">
       <div style="display:flex;flex-direction:column;align-items:center;gap:4px;width:100%;height:140px;justify-content:flex-end;">
         <div class="bar-lbl">${fmt(y.sav)}</div>
         <div style="width:100%;display:flex;align-items:flex-end;gap:4px;height:${mh}px;">
           <div class="bar sav" style="height:${sh}px;"></div>
-          <div class="bar kong" style="height:${kh}px;"></div>
+          <div class="bar kong" style="height:${kh}px;" title="Kong: ${fmt(y.kong)}${y.ps>0?' + PS: '+fmt(y.ps):''}"></div>
         </div>
+        <div style="font-size:9px;color:var(--g600);text-align:center;">${y.ps>0?'incl. PS':''}</div>
       </div>
       <div class="bar-yr">Year ${y.yr}</div>
     </div>`;
@@ -1783,7 +1825,11 @@ function generateReport() {
   const netAnn  = annSav - kong.annual - psCostR;
   const roi     = kong.annual > 0 ? (annSav - kong.annual) / kong.annual * 100 : 0;
   const payback = totalMo > 0 && kong.annual > 0 ? (kong.annual + psCostR) / totalMo : 0;
-  const p3      = proj3yr(rSpend, rFixed, kongYearsR, psCostR);
+  const rUseRamp = ck('tog-ramp');
+  const rAdoptMul = rUseRamp
+    ? [(+v('ramp-y1')||50)/100, (+v('ramp-y2')||75)/100, (+v('ramp-y3')||100)/100]
+    : [1, 1, 1];
+  const p3      = proj3yr(rSpend, rFixed, kongYearsR, psCostR, rAdoptMul);
   const buildCost    = S.numEng * S.engCost * S.buildMo;
   const rMaintY1     = S.engCost * 12 * (S.maintPct / 100);
   const rMaintY2     = rMaintY1 * 1.05;
@@ -1808,13 +1854,15 @@ function generateReport() {
   const totalW = p3.yrs.length * (barW * 2 + gap + 20);
   const bars = p3.yrs.map((y, i) => {
     const x = i * (barW * 2 + gap + 20) + 20;
+    const kt = y.kong + (y.ps || 0); // include PS in Y1 bar
     const sh = Math.max(4, y.sav / maxVal * chartH);
-    const kh = Math.max(4, y.kong / maxVal * chartH);
+    const kh = Math.max(4, kt / maxVal * chartH);
+    const psNote = y.ps > 0 ? ` (+PS)` : '';
     return `
       <text x="${x + barW}" y="${chartH - sh - 6}" fill="#CCFF00" font-size="10" text-anchor="middle" font-family="monospace">${fmt(y.sav)}</text>
       <rect x="${x}" y="${chartH - sh}" width="${barW}" height="${sh}" fill="#CCFF00" rx="3"/>
       <rect x="${x + barW + 4}" y="${chartH - kh}" width="${barW - 4}" height="${kh}" fill="#2D2E2C" rx="3"/>
-      <text x="${x + barW}" y="${chartH + 18}" fill="#676B66" font-size="11" text-anchor="middle" font-family="sans-serif">Year ${y.yr}</text>
+      <text x="${x + barW}" y="${chartH + 18}" fill="#676B66" font-size="11" text-anchor="middle" font-family="sans-serif">Year ${y.yr}${psNote}</text>
     `;
   }).join('');
 
@@ -2205,6 +2253,13 @@ function togMcp() {
   const on = document.getElementById('tog-mcp').checked;
   const det = document.getElementById('det-mcp');
   if (det) det.style.display = on ? 'block' : 'none';
+  upd();
+}
+
+function togRamp() {
+  const on = document.getElementById('tog-ramp').checked;
+  const f = document.getElementById('ramp-fields');
+  if (f) f.style.display = on ? 'block' : 'none';
   upd();
 }
 
